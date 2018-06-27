@@ -63,10 +63,10 @@ function [l_edge,r_edge,l_pw,r_pw,r,x0,gof_vec] = find_edges(edge_sino, pw_sino,
 %   usefits: 1=on, 0=off. If on, it does a fit of the found edges and
 %   uses the fit values for modeling the container.
 
-    l_pw = zeros(size(sino1,2),1); % first phase wrapped pixel on left
-    r_pw = zeros(size(sino1,2),1); % first phase wrapped pixel on right
-    l_edge = zeros(size(sino1,2),1); % left edge of sample position
-    r_edge = zeros(size(sino1,2),1); % right edge of sample position
+    l_pw = zeros(size(edge_sino,2),1); % first phase wrapped pixel on left
+    r_pw = zeros(size(edge_sino,2),1); % first phase wrapped pixel on right
+    l_edge = zeros(size(edge_sino,2),1); % left edge of sample position
+    r_edge = zeros(size(edge_sino,2),1); % right edge of sample position
 
     % find the max of the temp_sino on the left and right side of each line
     for ang = 1:size(edge_sino, 2) % loop over angles
@@ -85,11 +85,11 @@ function [l_edge,r_edge,l_pw,r_pw,r,x0,gof_vec] = find_edges(edge_sino, pw_sino,
     end
 
     % find center and radius
-    x0 = size(sino1, 1)/2 - (r_edge + l_edge)/2; % relative to middle of projection
+    x0 = size(edge_sino, 1)/2 - (r_edge + l_edge)/2; % relative to middle of projection
     r = mean((r_edge - l_edge)/2);
 
     % Fit the edges
-    xdata = (1:size(sino1, 2))';
+    xdata = (1:size(edge_sino, 2))';
     [f_ledge, gof_ledge] = fit(xdata, l_edge, 'fourier1','Robust','on');
     [f_redge, gof_redge] = fit(xdata, r_edge, 'fourier1','Robust','on');
     [f_lpw, gof_lpw] = fit(xdata, l_pw, 'fourier1','Robust','on');
@@ -101,7 +101,7 @@ function [l_edge,r_edge,l_pw,r_pw,r,x0,gof_vec] = find_edges(edge_sino, pw_sino,
         r_edge = round(feval(f_redge,xdata));
         l_pw = round(feval(f_lpw,xdata));
         r_pw = round(feval(f_rpw,xdata));
-        x0 = size(sino1, 1)/2 - (r_edge + l_edge)/2; % relative to middle of projection
+        x0 = size(edge_sino, 1)/2 - (r_edge + l_edge)/2; % relative to middle of projection
         r = mean((r_edge - l_edge)/2);
     end
 
